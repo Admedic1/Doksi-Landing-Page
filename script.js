@@ -1,3 +1,11 @@
+function sendLeadToZapier(userData) {
+  fetch("https://hooks.zapier.com/hooks/catch/20953398/3xwfq9p/", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(userData)
+  });
+}
+
 console.log("script loaded");
 
 // ---------------------
@@ -30,30 +38,6 @@ async function sendTestLeadToZapier() {
 
 // Expose test function immediately
 window.sendTestLeadToZapier = sendTestLeadToZapier;
-
-// ---------------------
-//  WEBHOOK SUBMISSION
-// ---------------------
-async function sendLeadToZapier(data) {
-    console.log("Sending REAL lead to Zapier:", data);
-
-    try {
-        const res = await fetch("https://hooks.zapier.com/hooks/catch/23450484/u8v689f/", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(data)
-        });
-
-        const text = await res.text();
-        console.log("Zapier Response:", text);
-
-    } catch (err) {
-        console.error("Error sending lead:", err);
-    }
-}
-
-// Expose to window - NOT inside any IIFE
-window.sendLeadToZapier = sendLeadToZapier;
 
 // -------------------------------------------------
 //          QUIZ LOGIC BELOW
