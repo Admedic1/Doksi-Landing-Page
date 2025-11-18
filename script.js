@@ -1,0 +1,258 @@
+console.log("script loaded");
+
+// ---------------------
+//  SEND TEST LEAD
+// ---------------------
+async function sendTestLeadToZapier() {
+    console.log("Running sendTestLeadToZapier()");
+
+    const testPayload = {
+        name: "Test User",
+        email: "test@example.com",
+        phone: "6075551234",
+        address: "123 Main St, Binghamton NY"
+    };
+
+    try {
+        const res = await fetch("https://hooks.zapier.com/hooks/catch/23450484/u8v689f/", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify(testPayload)
+        });
+
+        const text = await res.text();
+        console.log("Zapier Response:", text);
+
+    } catch (err) {
+        console.error("Error sending test lead:", err);
+    }
+}
+
+// Expose test function immediately
+window.sendTestLeadToZapier = sendTestLeadToZapier;
+
+// ---------------------
+//  WEBHOOK SUBMISSION
+// ---------------------
+async function sendLeadToZapier(data) {
+    console.log("Sending REAL lead to Zapier:", data);
+
+    try {
+        const res = await fetch("https://hooks.zapier.com/hooks/catch/23450484/u8v689f/", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data)
+        });
+
+        const text = await res.text();
+        console.log("Zapier Response:", text);
+
+    } catch (err) {
+        console.error("Error sending lead:", err);
+    }
+}
+
+// Expose to window - NOT inside any IIFE
+window.sendLeadToZapier = sendLeadToZapier;
+
+// -------------------------------------------------
+//          QUIZ LOGIC BELOW
+// -------------------------------------------------
+
+(function() {
+    'use strict';
+
+    let currentStep = 0;
+    let userData = {};
+
+    const quizData = {
+        steps: ['step0', 'step1', 'step2', 'step3', 'step4', 'step5'],
+        progress: [0, 20, 40, 60, 80, 100]
+    };
+
+    function initQuiz() {
+        const quizOptions = document.querySelectorAll('.quiz-option[data-answer]');
+        const nextButtons = document.querySelectorAll('.quiz-btn-next');
+
+        quizOptions.forEach(option => {
+            option.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                handleInitialQuestion.call(this, e);
+            });
+        });
+
+        nextButtons.forEach((btn, index) => {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                handleNextStep(index + 1);
+            });
+        });
+
+        const inputs = document.querySelectorAll('.quiz-input');
+        inputs.forEach((input, index) => {
+            input.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    handleNextStep(index + 1);
+                }
+            });
+        });
+    }
+
+    function handleInitialQuestion(e) {
+        if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        const answer = this.getAttribute('data-answer');
+
+        if (answer === 'no') {
+            alert('We primarily work with homeowners.');
+            return;
+        }
+
+        document.querySelectorAll('.quiz-option').forEach(opt => {
+            opt.classList.remove('quiz-option-primary');
+        });
+
+        this.classList.add('quiz-option-primary');
+
+        userData.homeowner = answer;
+        setTimeout(() => showStep(1), 300);
+    }
+
+    function handleNextStep(stepIndex) {
+        const input = getInputForStep(stepIndex);
+        if (!input) return;
+
+        const value = input.value.trim();
+        if (!value) {
+            input.focus();
+            input.style.borderColor = '#ef4444';
+            setTimeout(() => input.style.borderColor = '', 2000);
+            return;
+        }
+
+        // Email validation for step 2
+        if (stepIndex === 2) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(value)) {
+                input.focus();
+                input.style.borderColor = '#ef4444';
+                setTimeout(() => input.style.borderColor = '', 2000);
+                return;
+            }
+        }
+
+        if (stepIndex === 1) {
+            userData.name = value;
+            updatePersonalizedMessages(value);
+        } else if (stepIndex === 2) {
+            userData.email = value;
+        } else if (stepIndex === 3) {
+            userData.phone = value;
+        } else if (stepIndex === 4) {
+            userData.address = value;
+
+            // SEND TO ZAPIER HERE - function is in global scope
+            sendLeadToZapier(userData);
+        }
+
+        if (stepIndex < 4) {
+            showStep(stepIndex + 1);
+        } else {
+            showStep(5);
+        }
+    }
+
+    function getInputForStep(stepIndex) {
+        const inputs = {
+            1: document.getElementById('userName'),
+            2: document.getElementById('userEmail'),
+            3: document.getElementById('userPhone'),
+            4: document.getElementById('userAddress')
+        };
+        return inputs[stepIndex];
+    }
+
+    function updatePersonalizedMessages(name) {
+        const step2Title = document.getElementById('step2Title');
+        const step3Title = document.getElementById('step3Title');
+        const step4Title = document.getElementById('step4Title');
+
+        if (step2Title) step2Title.textContent = `Hey ${name}! 👋`;
+        if (step3Title) step3Title.textContent = `Almost there, ${name}! 🚀`;
+        if (step4Title) step4Title.textContent = `Last step, ${name}! 🎉`;
+    }
+
+    function showStep(stepIndex) {
+        document.querySelectorAll('.quiz-step').forEach(step => {
+            step.classList.add('hidden');
+        });
+
+        const currentStepEl = document.getElementById(quizData.steps[stepIndex]);
+        if (currentStepEl) {
+            currentStepEl.classList.remove('hidden');
+
+            const progressBar = currentStepEl.querySelector('.progress-bar');
+            if (progressBar) progressBar.style.width = quizData.progress[stepIndex] + '%';
+
+            // Focus first input if exists
+            const input = currentStepEl.querySelector('.quiz-input');
+            if (input) {
+                setTimeout(() => input.focus(), 100);
+            }
+
+            // Scroll quiz into view on mobile
+            if (window.innerWidth < 768) {
+                const quizCard = document.getElementById('quizCard');
+                if (quizCard) {
+                    quizCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }
+        }
+
+        // Hide footer on success step
+        const footer = document.getElementById('quizFooter');
+        if (footer) {
+            footer.style.display = stepIndex === 5 ? 'none' : 'block';
+        }
+
+        currentStep = stepIndex;
+    }
+
+    function initCTAs() {
+        const ctaButtons = document.querySelectorAll('.btn-primary, .btn-lg');
+        ctaButtons.forEach(btn => {
+            if (!btn.closest('.quiz-card')) {
+                btn.addEventListener('click', function(e) {
+                    const quizCard = document.getElementById('quizCard');
+                    if (quizCard) {
+                        e.preventDefault();
+                        quizCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        // If on step 0, trigger first question
+                        if (currentStep === 0) {
+                            const firstOption = document.querySelector('.quiz-option[data-answer="yes"]');
+                            if (firstOption) {
+                                setTimeout(() => firstOption.click(), 500);
+                            }
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function() {
+            initQuiz();
+            initCTAs();
+        });
+    } else {
+        initQuiz();
+        initCTAs();
+    }
+})();
