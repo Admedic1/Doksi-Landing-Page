@@ -388,6 +388,7 @@ body {
 .text-gradient {
   background: linear-gradient(120deg, var(--purple), var(--purple-dark));
   -webkit-background-clip: text;
+  background-clip: text;
   color: transparent;
 }
 
@@ -1127,6 +1128,7 @@ body {
   font-weight: 800;
   background: linear-gradient(120deg, var(--purple), var(--purple-dark));
   -webkit-background-clip: text;
+  background-clip: text;
   color: transparent;
   margin-bottom: 0.5rem;
   line-height: 1;
