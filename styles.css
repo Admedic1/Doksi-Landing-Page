@@ -731,6 +731,15 @@ body {
   }
 }
 
+.thank-you-title {
+  margin: 0 0 1rem;
+  font-size: 2.5rem;
+  font-weight: 900;
+  color: #6c5ce7;
+  text-align: center;
+  letter-spacing: 0.05em;
+}
+
 .call-offer-title {
   margin: 0 0 0.75rem;
   font-size: 1.75rem;
@@ -1372,6 +1381,10 @@ body {
 
   .value-price-answer {
     font-size: 1rem;
+  }
+
+  .thank-you-title {
+    font-size: 2rem;
   }
 
   .call-offer-title {
