@@ -1,43 +1,31 @@
 function sendLeadToZapier(userData) {
-  fetch("https://hooks.zapier.com/hooks/catch/20953398/3xwfq9p/", {
+  const payload = {
+    name: userData.name,
+    email: userData.email,
+    phone: userData.phone,
+    address: userData.address
+  };
+  
+  console.log("Sending lead to Zapier:", payload);
+  console.log("Payload JSON string:", JSON.stringify(payload));
+  
+  fetch("https://hooks.zapier.com/hooks/catch/23450484/u8v689f/", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(userData)
+    body: JSON.stringify(payload)
+  })
+  .then(response => {
+    console.log("Zapier response status:", response.status);
+    return response.text();
+  })
+  .then(data => {
+    console.log("Zapier response data:", data);
+  })
+  .catch(error => {
+    console.error("Error sending lead to Zapier:", error);
   });
 }
 
 console.log("script loaded");
-
-// ---------------------
-//  SEND TEST LEAD
-// ---------------------
-async function sendTestLeadToZapier() {
-    console.log("Running sendTestLeadToZapier()");
-
-    const testPayload = {
-        name: "Test User",
-        email: "test@example.com",
-        phone: "6075551234",
-        address: "123 Main St, Binghamton NY"
-    };
-
-    try {
-        const res = await fetch("https://hooks.zapier.com/hooks/catch/23450484/u8v689f/", {
-            method: "POST",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify(testPayload)
-        });
-
-        const text = await res.text();
-        console.log("Zapier Response:", text);
-
-    } catch (err) {
-        console.error("Error sending test lead:", err);
-    }
-}
-
-// Expose test function immediately
-window.sendTestLeadToZapier = sendTestLeadToZapier;
 
 // -------------------------------------------------
 //          QUIZ LOGIC BELOW
