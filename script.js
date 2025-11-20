@@ -249,38 +249,6 @@ console.log("script loaded - v3.0");
                 return;
             }
 
-            // ✅ FIRE FACEBOOK PIXEL LEAD EVENT - User completed form successfully
-            console.log('🎯 Form submitted successfully - Firing Facebook Lead event');
-            console.log('🔍 Checking if fbq exists:', typeof fbq);
-            console.log('🔍 Checking if window.fbq exists:', typeof window.fbq);
-            
-            if (typeof fbq !== 'undefined') {
-                console.log('✅ Firing Facebook Lead event NOW');
-                try {
-                    fbq('track', 'Lead', {
-                        value: 0.00,
-                        currency: 'USD'
-                    });
-                    console.log('✅✅✅ Facebook Lead event FIRED SUCCESSFULLY ✅✅✅');
-                } catch (error) {
-                    console.error('❌ Error firing Facebook Lead event:', error);
-                }
-            } else if (typeof window.fbq !== 'undefined') {
-                console.log('✅ Firing Facebook Lead event via window.fbq');
-                try {
-                    window.fbq('track', 'Lead', {
-                        value: 0.00,
-                        currency: 'USD'
-                    });
-                    console.log('✅✅✅ Facebook Lead event FIRED SUCCESSFULLY ✅✅✅');
-                } catch (error) {
-                    console.error('❌ Error firing Facebook Lead event:', error);
-                }
-            } else {
-                console.error('❌ Facebook Pixel (fbq) not found!');
-                console.error('❌ This means the pixel script did not load or was blocked by an ad blocker');
-            }
-
             // Success - proceed to thank you page
             setTimeout(() => {
                 isSubmitting = false;
@@ -355,6 +323,10 @@ console.log("script loaded - v3.0");
         // Log when thank-you page is shown
         if (stepIndex === 5) {
             console.log('📄 Thank you page (Step 5) now visible to user');
+            if (typeof fbq === 'function') {
+                fbq('track', 'Lead', {value: 0.00, currency: 'USD'});
+                console.log("🔥 REAL Facebook Lead event fired on thank-you step");
+            }
         }
 
         currentStep = stepIndex;
