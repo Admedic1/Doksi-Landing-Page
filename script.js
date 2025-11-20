@@ -68,7 +68,7 @@ function sendLeadToZapier(userData) {
   return true;
 }
 
-console.log("script loaded");
+console.log("script loaded - v3.0");
 
 // -------------------------------------------------
 //          QUIZ LOGIC BELOW
