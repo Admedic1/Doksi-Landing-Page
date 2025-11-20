@@ -321,12 +321,50 @@ console.log("script loaded");
         }
 
         // Fire Facebook Pixel Lead event ONLY when user reaches thank-you page
-        if (stepIndex === 5 && typeof fbq !== 'undefined') {
-            console.log('✅ User reached thank-you page - Firing Facebook Lead event');
-            fbq('track', 'Lead', {
-                value: 0.00,
-                currency: 'USD'
-            });
+        if (stepIndex === 5) {
+            console.log('🎯 Step 5 (Thank You page) reached');
+            console.log('🔍 Checking if fbq exists:', typeof fbq);
+            console.log('🔍 Checking if window.fbq exists:', typeof window.fbq);
+            
+            if (typeof fbq !== 'undefined') {
+                console.log('✅ Firing Facebook Lead event NOW');
+                try {
+                    fbq('track', 'Lead', {
+                        value: 0.00,
+                        currency: 'USD'
+                    });
+                    console.log('✅ Facebook Lead event fired successfully');
+                } catch (error) {
+                    console.error('❌ Error firing Facebook Lead event:', error);
+                }
+            } else if (typeof window.fbq !== 'undefined') {
+                console.log('✅ Firing Facebook Lead event via window.fbq');
+                try {
+                    window.fbq('track', 'Lead', {
+                        value: 0.00,
+                        currency: 'USD'
+                    });
+                    console.log('✅ Facebook Lead event fired successfully');
+                } catch (error) {
+                    console.error('❌ Error firing Facebook Lead event:', error);
+                }
+            } else {
+                console.error('❌ Facebook Pixel (fbq) not found!');
+                // Try again after a short delay
+                setTimeout(function() {
+                    if (typeof fbq !== 'undefined' || typeof window.fbq !== 'undefined') {
+                        const fbqFunc = typeof fbq !== 'undefined' ? fbq : window.fbq;
+                        console.log('✅ Firing Facebook Lead event (delayed)');
+                        fbqFunc('track', 'Lead', {
+                            value: 0.00,
+                            currency: 'USD'
+                        });
+                        console.log('✅ Facebook Lead event fired successfully (delayed)');
+                    } else {
+                        console.error('❌ Facebook Pixel still not available after delay');
+                    }
+                }, 500);
+            }
         }
 
         currentStep = stepIndex;
