@@ -320,6 +320,15 @@ console.log("script loaded");
             footer.style.display = stepIndex === 5 ? 'none' : 'block';
         }
 
+        // Fire Facebook Pixel Lead event ONLY when user reaches thank-you page
+        if (stepIndex === 5 && typeof fbq !== 'undefined') {
+            console.log('✅ User reached thank-you page - Firing Facebook Lead event');
+            fbq('track', 'Lead', {
+                value: 0.00,
+                currency: 'USD'
+            });
+        }
+
         currentStep = stepIndex;
     }
 
