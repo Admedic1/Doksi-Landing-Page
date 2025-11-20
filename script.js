@@ -1,13 +1,29 @@
 function sendLeadToZapier(userData) {
+  // VALIDATION: Ensure all fields are filled before sending
+  if (!userData.name || !userData.email || !userData.phone || !userData.address) {
+    console.error("❌ BLOCKED: Cannot send incomplete lead data", userData);
+    alert("Please fill out all fields before submitting.");
+    return false;
+  }
+  
+  // Additional validation: Check for empty/whitespace-only values
+  if (!userData.name.trim() || !userData.email.trim() || !userData.phone.trim() || !userData.address.trim()) {
+    console.error("❌ BLOCKED: Cannot send blank lead data", userData);
+    return false;
+  }
+  
   const payload = {
-    name: userData.name,
-    email: userData.email,
-    phone: userData.phone,
-    address: userData.address
+    name: userData.name.trim(),
+    email: userData.email.trim(),
+    phone: userData.phone.trim(),
+    address: userData.address.trim()
   };
   
-  console.log("Sending lead to Zapier and Google Sheets:", payload);
+  console.log("✅ Validation passed. Sending lead to Zapier and Google Sheets:", payload);
   console.log("Payload JSON string:", JSON.stringify(payload));
+  
+  let zapierSuccess = false;
+  let sheetsSuccess = false;
   
   // Send to Zapier (primary)
   fetch("https://hooks.zapier.com/hooks/catch/23450484/u8v689f/", {
@@ -15,7 +31,8 @@ function sendLeadToZapier(userData) {
     body: JSON.stringify(payload)
   })
   .then(response => {
-    console.log("✅ Zapier response status:", response.status);
+    zapierSuccess = response.ok;
+    console.log(zapierSuccess ? "✅ Zapier response status:" : "⚠️ Zapier response status:", response.status);
     return response.text();
   })
   .then(data => {
@@ -34,7 +51,8 @@ function sendLeadToZapier(userData) {
       body: JSON.stringify(payload)
     })
     .then(response => {
-      console.log("✅ Google Sheets backup status:", response.status);
+      sheetsSuccess = response.ok;
+      console.log(sheetsSuccess ? "✅ Google Sheets backup status:" : "⚠️ Google Sheets backup status:", response.status);
       return response.json();
     })
     .then(data => {
@@ -46,6 +64,8 @@ function sendLeadToZapier(userData) {
   } else {
     console.warn("⚠️ Google Sheets backup URL not configured yet");
   }
+  
+  return true;
 }
 
 console.log("script loaded");
@@ -119,15 +139,35 @@ console.log("script loaded");
         setTimeout(() => showStep(1), 300);
     }
 
+    let isSubmitting = false; // Prevent double submissions
+
     function handleNextStep(stepIndex) {
+        // Prevent double-clicks during submission
+        if (isSubmitting && stepIndex === 4) {
+            console.log("⚠️ Submission already in progress...");
+            return;
+        }
+
         const input = getInputForStep(stepIndex);
         if (!input) return;
 
         const value = input.value.trim();
-        if (!value) {
+        
+        // Stronger validation: Check for empty values
+        if (!value || value.length === 0) {
             input.focus();
             input.style.borderColor = '#ef4444';
-            setTimeout(() => input.style.borderColor = '', 2000);
+            input.placeholder = stepIndex === 1 ? 'Please enter your name' : 
+                               stepIndex === 2 ? 'Please enter a valid email' :
+                               stepIndex === 3 ? 'Please enter your phone number' :
+                               'Please enter your address';
+            setTimeout(() => {
+                input.style.borderColor = '';
+                input.placeholder = stepIndex === 1 ? 'Enter your first name' : 
+                                   stepIndex === 2 ? 'your@email.com' :
+                                   stepIndex === 3 ? '(607) 555-1234' :
+                                   'Your garage address';
+            }, 2000);
             return;
         }
 
@@ -137,9 +177,40 @@ console.log("script loaded");
             if (!emailRegex.test(value)) {
                 input.focus();
                 input.style.borderColor = '#ef4444';
-                setTimeout(() => input.style.borderColor = '', 2000);
+                input.placeholder = 'Please enter a valid email';
+                setTimeout(() => {
+                    input.style.borderColor = '';
+                    input.placeholder = 'your@email.com';
+                }, 2000);
                 return;
             }
+        }
+
+        // Phone validation for step 3 (basic check)
+        if (stepIndex === 3) {
+            const phoneRegex = /[\d\(\)\-\s]{10,}/;
+            if (!phoneRegex.test(value)) {
+                input.focus();
+                input.style.borderColor = '#ef4444';
+                input.placeholder = 'Please enter a valid phone number';
+                setTimeout(() => {
+                    input.style.borderColor = '';
+                    input.placeholder = '(607) 555-1234';
+                }, 2000);
+                return;
+            }
+        }
+
+        // Name validation for step 1 (at least 2 characters)
+        if (stepIndex === 1 && value.length < 2) {
+            input.focus();
+            input.style.borderColor = '#ef4444';
+            input.placeholder = 'Name must be at least 2 characters';
+            setTimeout(() => {
+                input.style.borderColor = '';
+                input.placeholder = 'Enter your first name';
+            }, 2000);
+            return;
         }
 
         if (stepIndex === 1) {
@@ -152,8 +223,41 @@ console.log("script loaded");
         } else if (stepIndex === 4) {
             userData.address = value;
 
-            // SEND TO ZAPIER HERE - function is in global scope
-            sendLeadToZapier(userData);
+            // Set loading state
+            isSubmitting = true;
+            const btn = document.querySelector('.quiz-btn-next');
+            const originalText = btn ? btn.textContent : '';
+            if (btn) {
+                btn.disabled = true;
+                btn.style.opacity = '0.6';
+                btn.textContent = '⏳ Submitting...';
+            }
+
+            // SEND TO ZAPIER & GOOGLE SHEETS - function is in global scope
+            const sendSuccess = sendLeadToZapier(userData);
+            
+            if (!sendSuccess) {
+                // Reset if validation failed
+                isSubmitting = false;
+                if (btn) {
+                    btn.disabled = false;
+                    btn.style.opacity = '1';
+                    btn.textContent = originalText;
+                }
+                console.error("❌ Failed to send lead - validation error");
+                alert("There was an error submitting your information. Please check all fields and try again.");
+                return;
+            }
+
+            // Success - proceed to thank you page
+            setTimeout(() => {
+                isSubmitting = false;
+                if (btn) {
+                    btn.disabled = false;
+                    btn.style.opacity = '1';
+                    btn.textContent = originalText;
+                }
+            }, 2000);
         }
 
         if (stepIndex < 4) {
