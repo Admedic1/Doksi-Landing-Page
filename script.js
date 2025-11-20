@@ -6,23 +6,46 @@ function sendLeadToZapier(userData) {
     address: userData.address
   };
   
-  console.log("Sending lead to Zapier:", payload);
+  console.log("Sending lead to Zapier and Google Sheets:", payload);
   console.log("Payload JSON string:", JSON.stringify(payload));
   
+  // Send to Zapier (primary)
   fetch("https://hooks.zapier.com/hooks/catch/23450484/u8v689f/", {
     method: "POST",
     body: JSON.stringify(payload)
   })
   .then(response => {
-    console.log("Zapier response status:", response.status);
+    console.log("✅ Zapier response status:", response.status);
     return response.text();
   })
   .then(data => {
     console.log("Zapier response data:", data);
   })
   .catch(error => {
-    console.error("Error sending lead to Zapier:", error);
+    console.error("❌ Error sending lead to Zapier:", error);
   });
+  
+  // Send to Google Sheets (backup)
+  const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbwWkTzfGurKHnNc5Xd1n0oA-la1TYVL12ZXJkps9PFT_bC6nsrGuSD_PGcXQD3u9DQ7/exec";
+  
+  if (GOOGLE_SHEET_URL && !GOOGLE_SHEET_URL.includes("PASTE_YOUR")) {
+    fetch(GOOGLE_SHEET_URL, {
+      method: "POST",
+      body: JSON.stringify(payload)
+    })
+    .then(response => {
+      console.log("✅ Google Sheets backup status:", response.status);
+      return response.json();
+    })
+    .then(data => {
+      console.log("Google Sheets backup response:", data);
+    })
+    .catch(error => {
+      console.error("❌ Error sending to Google Sheets backup:", error);
+    });
+  } else {
+    console.warn("⚠️ Google Sheets backup URL not configured yet");
+  }
 }
 
 console.log("script loaded");
