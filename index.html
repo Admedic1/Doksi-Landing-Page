@@ -540,6 +540,34 @@
           });
         }
 
+        // Facebook Lead Event - Fire when user reaches thank-you page (Step 5)
+        let leadEventFired = false;
+        const step5Observer = new MutationObserver(function(mutations) {
+          const step5 = document.getElementById('step5');
+          if (step5 && !step5.classList.contains('hidden') && !leadEventFired) {
+            leadEventFired = true;
+            console.log('✅ THANK YOU PAGE VISIBLE - Firing Facebook Lead Event');
+            if (typeof fbq !== 'undefined') {
+              fbq('track', 'Lead', {
+                value: 0.00,
+                currency: 'USD'
+              });
+              console.log('✅✅✅ Facebook Lead Event FIRED ✅✅✅');
+            } else {
+              console.error('❌ fbq not defined');
+            }
+          }
+        });
+        
+        const quizCard = document.getElementById('quizCard');
+        if (quizCard) {
+          step5Observer.observe(quizCard, {
+            attributes: true,
+            childList: true,
+            subtree: true
+          });
+        }
+
         // Exit intent popup
         const exitPopup = document.getElementById('exitPopup');
         const exitPopupClose = document.getElementById('exitPopupClose');
