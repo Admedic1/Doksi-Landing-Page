@@ -529,11 +529,10 @@
     <!-- Exit Intent Popup -->
     <div class="exit-popup" id="exitPopup">
         <div class="exit-popup-content">
-            <button class="exit-popup-close" id="exitPopupClose">&times;</button>
-            <h3>Wait! You're Almost There! 🎯</h3>
-            <p>You're just a few clicks away from claiming your <strong>10% discount</strong> and protecting your garage before winter hits.</p>
-            <p class="exit-popup-urgency">Only 2 spots left this month — don't miss out!</p>
-            <button class="btn btn-primary btn-lg" onclick="document.getElementById('exitPopup').style.display='none'; document.getElementById('quizCard').scrollIntoView({behavior: 'smooth', block: 'center'})">Continue to Special Offer →</button>
+            <h3>⚠️ Wait! Your 10% Discount is Waiting!</h3>
+            <p>You're just a few clicks away from claiming your <strong>exclusive 10% discount</strong> and protecting your garage before winter hits.</p>
+            <p class="exit-popup-urgency">⚡ Only 2 spots left this month — claim yours now!</p>
+            <button class="btn btn-primary btn-lg" onclick="document.getElementById('exitPopup').style.display='none'; document.getElementById('quizCard').scrollIntoView({behavior: 'smooth', block: 'center'})">Claim My 10% Discount Now →</button>
         </div>
     </div>
 
@@ -547,34 +546,29 @@
           });
         }
 
-        // Exit intent popup
+        // Exit intent popup - only triggers on true exit intent
         const exitPopup = document.getElementById('exitPopup');
-        const exitPopupClose = document.getElementById('exitPopupClose');
         let exitIntentTriggered = false;
+        let mouseLeaveTime = null;
 
-        // Track mouse movement for exit intent
-        document.addEventListener('mouseout', function(e) {
-          if (!e.toElement && !e.relatedTarget && !exitIntentTriggered) {
-            // User is moving mouse towards top of page (likely to close tab)
-            if (e.clientY < 10) {
-              exitIntentTriggered = true;
-              exitPopup.style.display = 'flex';
-            }
+        // Track mouse leaving viewport
+        document.addEventListener('mouseleave', function(e) {
+          if (!exitIntentTriggered && e.clientY <= 0) {
+            // Mouse left through the top of the viewport
+            mouseLeaveTime = Date.now();
+            
+            // Show popup immediately on exit intent
+            setTimeout(function() {
+              if (!exitIntentTriggered) {
+                exitIntentTriggered = true;
+                exitPopup.style.display = 'flex';
+                console.log('🚨 Exit intent detected - popup shown');
+              }
+            }, 100);
           }
         });
 
-        // Close popup handlers
-        if (exitPopupClose) {
-          exitPopupClose.addEventListener('click', function() {
-            exitPopup.style.display = 'none';
-          });
-        }
-
-        exitPopup.addEventListener('click', function(e) {
-          if (e.target === exitPopup) {
-            exitPopup.style.display = 'none';
-          }
-        });
+        // No close button - user MUST engage with the CTA
       });
     </script>
     <script src="script.js?v=3"></script>

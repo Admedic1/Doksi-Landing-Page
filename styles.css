@@ -908,60 +908,36 @@ body.quiz-modal-open {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.7);
+  background: rgba(0, 0, 0, 0.85);
   z-index: 1000;
   align-items: center;
   justify-content: center;
   padding: 1rem;
-  backdrop-filter: blur(4px);
+  backdrop-filter: blur(8px);
 }
 
 .exit-popup-content {
   background: white;
   border-radius: 1rem;
-  padding: 2rem 2rem 2.5rem;
-  max-width: 500px;
+  padding: 2.5rem 2rem 2.5rem;
+  max-width: 520px;
   width: 100%;
   position: relative;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 25px 80px rgba(0, 0, 0, 0.4);
   text-align: center;
-  animation: popupSlideIn 0.3s ease;
+  animation: popupSlideIn 0.4s ease;
+  border: 3px solid var(--purple);
 }
 
 @keyframes popupSlideIn {
   from {
     opacity: 0;
-    transform: translateY(-20px) scale(0.95);
+    transform: translateY(-30px) scale(0.85);
   }
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
   }
-}
-
-.exit-popup-close {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-  background: transparent;
-  border: none;
-  font-size: 2rem;
-  color: var(--text-soft);
-  cursor: pointer;
-  line-height: 1;
-  padding: 0;
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  transition: all 0.2s ease;
-}
-
-.exit-popup-close:hover {
-  background: #f3f4f6;
-  color: var(--text);
 }
 
 .exit-popup-content h3 {
@@ -984,6 +960,12 @@ body.quiz-modal-open {
   font-weight: 700 !important;
   font-size: 1.05rem !important;
   font-style: italic;
+}
+
+.exit-popup-content .btn-primary {
+  font-size: 1.05rem;
+  padding: 0.9rem 2rem;
+  margin-top: 0.5rem;
 }
 
 /* Mascot Social Proof */
@@ -1652,5 +1634,28 @@ body.quiz-modal-open {
 
   .final-cta-text h2 {
     font-size: 1.5rem;
+  }
+
+  .exit-popup-content {
+    padding: 2rem 1.5rem;
+    margin: 1rem;
+  }
+
+  .exit-popup-content h3 {
+    font-size: 1.35rem;
+  }
+
+  .exit-popup-content p {
+    font-size: 0.95rem;
+  }
+
+  .exit-popup-urgency {
+    font-size: 0.95rem !important;
+  }
+
+  .exit-popup-content .btn-primary {
+    font-size: 0.95rem;
+    padding: 0.85rem 1.5rem;
+    width: 100%;
   }
 }
