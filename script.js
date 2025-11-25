@@ -1,22 +1,22 @@
 function sendLeadToZapier(userData) {
   // VALIDATION: Ensure all fields are filled before sending
-  if (!userData.name || !userData.email || !userData.phone || !userData.address) {
+  if (!userData.name || !userData.zip || !userData.email || !userData.phone) {
     console.error("❌ BLOCKED: Cannot send incomplete lead data", userData);
     alert("Please fill out all fields before submitting.");
     return false;
   }
   
   // Additional validation: Check for empty/whitespace-only values
-  if (!userData.name.trim() || !userData.email.trim() || !userData.phone.trim() || !userData.address.trim()) {
+  if (!userData.name.trim() || !userData.zip.trim() || !userData.email.trim() || !userData.phone.trim()) {
     console.error("❌ BLOCKED: Cannot send blank lead data", userData);
     return false;
   }
   
   const payload = {
     name: userData.name.trim(),
+    zip: userData.zip.trim(),
     email: userData.email.trim(),
-    phone: userData.phone.trim(),
-    address: userData.address.trim()
+    phone: userData.phone.trim()
   };
   
   console.log("✅ Validation passed. Sending lead to Zapier and Google Sheets:", payload);
@@ -182,21 +182,48 @@ console.log("script loaded - v3.0");
             input.focus();
             input.style.borderColor = '#ef4444';
             input.placeholder = stepIndex === 1 ? 'Please enter your name' : 
-                               stepIndex === 2 ? 'Please enter a valid email' :
-                               stepIndex === 3 ? 'Please enter your phone number' :
-                               'Please enter your address';
+                               stepIndex === 2 ? 'Please enter your zip code' :
+                               stepIndex === 3 ? 'Please enter a valid email' :
+                               'Please enter your phone number';
             setTimeout(() => {
                 input.style.borderColor = '';
-                input.placeholder = stepIndex === 1 ? 'Enter your first name' : 
-                                   stepIndex === 2 ? 'your@email.com' :
-                                   stepIndex === 3 ? '(607) 555-1234' :
-                                   'Your garage address';
+                input.placeholder = stepIndex === 1 ? 'Enter your name' : 
+                                   stepIndex === 2 ? 'Enter zip code' :
+                                   stepIndex === 3 ? 'your@email.com' :
+                                   '(607) 123-4567';
             }, 2000);
             return;
         }
 
-        // Email validation for step 2
+        // Name validation for step 1 (at least 2 characters)
+        if (stepIndex === 1 && value.length < 2) {
+            input.focus();
+            input.style.borderColor = '#ef4444';
+            input.placeholder = 'Name must be at least 2 characters';
+            setTimeout(() => {
+                input.style.borderColor = '';
+                input.placeholder = 'Enter your name';
+            }, 2000);
+            return;
+        }
+
+        // Zip code validation for step 2
         if (stepIndex === 2) {
+            const zipRegex = /^\d{5}$/;
+            if (!zipRegex.test(value)) {
+                input.focus();
+                input.style.borderColor = '#ef4444';
+                input.placeholder = 'Please enter a valid 5-digit zip code';
+                setTimeout(() => {
+                    input.style.borderColor = '';
+                    input.placeholder = 'Enter zip code';
+                }, 2000);
+                return;
+            }
+        }
+
+        // Email validation for step 3
+        if (stepIndex === 3) {
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!emailRegex.test(value)) {
                 input.focus();
@@ -210,8 +237,8 @@ console.log("script loaded - v3.0");
             }
         }
 
-        // Phone validation for step 3 (basic check)
-        if (stepIndex === 3) {
+        // Phone validation for step 4 (basic check)
+        if (stepIndex === 4) {
             const phoneRegex = /[\d\(\)\-\s]{10,}/;
             if (!phoneRegex.test(value)) {
                 input.focus();
@@ -219,33 +246,21 @@ console.log("script loaded - v3.0");
                 input.placeholder = 'Please enter a valid phone number';
                 setTimeout(() => {
                     input.style.borderColor = '';
-                    input.placeholder = '(607) 555-1234';
+                    input.placeholder = '(607) 123-4567';
                 }, 2000);
                 return;
             }
-        }
-
-        // Name validation for step 1 (at least 2 characters)
-        if (stepIndex === 1 && value.length < 2) {
-            input.focus();
-            input.style.borderColor = '#ef4444';
-            input.placeholder = 'Name must be at least 2 characters';
-            setTimeout(() => {
-                input.style.borderColor = '';
-                input.placeholder = 'Enter your first name';
-            }, 2000);
-            return;
         }
 
         if (stepIndex === 1) {
             userData.name = value;
             updatePersonalizedMessages(value);
         } else if (stepIndex === 2) {
-            userData.email = value;
+            userData.zip = value;
         } else if (stepIndex === 3) {
-            userData.phone = value;
+            userData.email = value;
         } else if (stepIndex === 4) {
-            userData.address = value;
+            userData.phone = value;
 
             // Set loading state
             isSubmitting = true;
@@ -294,9 +309,9 @@ console.log("script loaded - v3.0");
     function getInputForStep(stepIndex) {
         const inputs = {
             1: document.getElementById('userName'),
-            2: document.getElementById('userEmail'),
-            3: document.getElementById('userPhone'),
-            4: document.getElementById('userAddress')
+            2: document.getElementById('userZip'),
+            3: document.getElementById('userEmail'),
+            4: document.getElementById('userPhone')
         };
         return inputs[stepIndex];
     }
@@ -306,9 +321,9 @@ console.log("script loaded - v3.0");
         const step3Title = document.getElementById('step3Title');
         const step4Title = document.getElementById('step4Title');
 
-        if (step2Title) step2Title.textContent = `Hey ${name}! 👋`;
-        if (step3Title) step3Title.textContent = `Almost there, ${name}! 🚀`;
-        if (step4Title) step4Title.textContent = `Last step, ${name}! 🎉`;
+        if (step2Title) step2Title.textContent = `Hi ${name}! What's your zip code?`;
+        if (step3Title) step3Title.textContent = `What's your email?`;
+        if (step4Title) step4Title.textContent = `What's your phone number?`;
     }
 
     function showStep(stepIndex) {

@@ -542,12 +542,24 @@ body {
 /* Quiz card */
 
 .quiz-card {
-  background: white;
+  background: linear-gradient(135deg, #6c5ce7 0%, #5b4dcc 100%);
   border-radius: 1rem;
   padding: 1.6rem 1.5rem 1.8rem;
-  box-shadow: 0 18px 60px rgba(15, 23, 42, 0.08);
-  border: 1px solid rgba(148, 163, 184, 0.35);
+  box-shadow: 0 20px 80px rgba(108, 92, 231, 0.4);
+  border: none;
   transition: all 0.3s ease;
+}
+
+.quiz-card h2,
+.quiz-card p,
+.quiz-question-text,
+.quiz-sub,
+.quiz-time {
+  color: white !important;
+}
+
+.hero-urgency {
+  color: #fef08a !important;
 }
 
 /* Sticky Quiz Modal - Locks user in once they engage */
@@ -702,7 +714,7 @@ body.quiz-modal-open {
 .quiz-progress {
   width: 100%;
   height: 6px;
-  background: #e5e7eb;
+  background: rgba(255, 255, 255, 0.2);
   border-radius: 999px;
   margin-bottom: 1.5rem;
   overflow: hidden;
@@ -710,44 +722,50 @@ body.quiz-modal-open {
 
 .progress-bar {
   height: 100%;
-  background: linear-gradient(135deg, var(--purple), var(--purple-dark));
+  background: white;
   border-radius: 999px;
   transition: width 0.4s ease;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
 }
 
 .quiz-input {
   width: 100%;
   padding: 0.875rem 1rem;
-  border: 2px solid var(--border);
+  border: 2px solid rgba(255, 255, 255, 0.3);
   border-radius: 0.65rem;
   font-size: 1rem;
   margin-bottom: 1rem;
-  transition: border-color 0.2s ease;
+  transition: all 0.2s ease;
   font-family: inherit;
+  background: white;
+  color: var(--text);
 }
 
 .quiz-input:focus {
   outline: none;
-  border-color: var(--purple);
-  box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.1);
+  border-color: white;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3);
+  background: white;
 }
 
 .quiz-btn-next {
   width: 100%;
   padding: 0.875rem 1.5rem;
-  background: linear-gradient(135deg, var(--purple), var(--purple-dark));
-  color: white;
+  background: white;
+  color: var(--purple);
   border: none;
   border-radius: 0.65rem;
   font-size: 1rem;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .quiz-btn-next:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(108, 92, 231, 0.3);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+  background: #ffffff;
 }
 
 .quiz-btn-next:active {

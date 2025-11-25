@@ -84,8 +84,6 @@
                     </svg>
                 </div>
                 
-                <p class="hero-subheadline">Answer some quick questions to save your garage from winter damage</p>
-                
                 <div class="hero-quiz">
                     <div class="quiz-card" id="quizCard">
                         <div class="quiz-step" id="step0">
@@ -96,8 +94,8 @@
                             <div class="quiz-question">
                                 <p class="quiz-question-text">Do you own your home?</p>
                                 <div class="quiz-options">
-                                    <button type="button" class="quiz-option quiz-option-primary" data-answer="yes">✓ Yes - Get My Free Quote</button>
-                                    <button type="button" class="quiz-option" data-answer="no">No, I rent</button>
+                                    <button type="button" class="quiz-option quiz-option-primary" data-answer="yes">Yes</button>
+                                    <button type="button" class="quiz-option" data-answer="no">No</button>
                                 </div>
                             </div>
                         </div>
@@ -107,49 +105,45 @@
                             <div class="quiz-progress">
                                 <div class="progress-bar" style="width: 20%"></div>
                             </div>
-                            <h2>Great! Let's get started 🎯</h2>
+                            <h2>What's your name?</h2>
                             <div class="quiz-question">
-                                <p class="quiz-question-text">What's your first name?</p>
                                 <input type="text" class="quiz-input" id="userName" placeholder="Enter your name">
                                 <button type="button" class="quiz-btn-next">Continue →</button>
                             </div>
                         </div>
 
-                        <!-- Email Step -->
+                        <!-- Zip Code Step -->
                         <div class="quiz-step hidden" id="step2">
                             <div class="quiz-progress">
                                 <div class="progress-bar" style="width: 40%"></div>
                             </div>
-                            <h2 id="step2Title">Hey there! 👋</h2>
+                            <h2 id="step2Title">Hi! What's your zip code?</h2>
                             <div class="quiz-question">
-                                <p class="quiz-question-text">What's your email address?</p>
+                                <input type="text" class="quiz-input" id="userZip" placeholder="Enter zip code" maxlength="5">
+                                <button type="button" class="quiz-btn-next">Continue →</button>
+                            </div>
+                        </div>
+
+                        <!-- Email Step -->
+                        <div class="quiz-step hidden" id="step3">
+                            <div class="quiz-progress">
+                                <div class="progress-bar" style="width: 60%"></div>
+                            </div>
+                            <h2 id="step3Title">What's your email?</h2>
+                            <div class="quiz-question">
                                 <input type="email" class="quiz-input" id="userEmail" placeholder="your@email.com">
                                 <button type="button" class="quiz-btn-next">Continue →</button>
                             </div>
                         </div>
 
                         <!-- Phone Step -->
-                        <div class="quiz-step hidden" id="step3">
-                            <div class="quiz-progress">
-                                <div class="progress-bar" style="width: 60%"></div>
-                            </div>
-                            <h2 id="step3Title">Almost there! 🚀</h2>
-                            <div class="quiz-question">
-                                <p class="quiz-question-text">What's your phone number?</p>
-                                <input type="tel" class="quiz-input" id="userPhone" placeholder="(607) 123-4567">
-                                <button type="button" class="quiz-btn-next">Continue →</button>
-                            </div>
-                        </div>
-
-                        <!-- Address Step -->
                         <div class="quiz-step hidden" id="step4">
                             <div class="quiz-progress">
                                 <div class="progress-bar" style="width: 80%"></div>
                             </div>
-                            <h2 id="step4Title">Last step! 🎉</h2>
+                            <h2 id="step4Title">What's your phone number?</h2>
                             <div class="quiz-question">
-                                <p class="quiz-question-text">What's your property address?</p>
-                                <input type="text" class="quiz-input" id="userAddress" placeholder="123 Main St, Binghamton, NY">
+                                <input type="tel" class="quiz-input" id="userPhone" placeholder="(607) 123-4567">
                                 <button type="button" class="quiz-btn-next">Get My Free Quote →</button>
                             </div>
                         </div>
