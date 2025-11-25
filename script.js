@@ -322,8 +322,8 @@ console.log("script loaded - v3.0");
         const step4Title = document.getElementById('step4Title');
 
         if (step2Title) step2Title.textContent = `Hi ${name}! What's your zip code?`;
-        if (step3Title) step3Title.textContent = `What's your email?`;
-        if (step4Title) step4Title.textContent = `What's your phone number?`;
+        if (step3Title) step3Title.textContent = `${name}, what's your email?`;
+        if (step4Title) step4Title.textContent = `Last step ${name}! What's your phone number?`;
     }
 
     function showStep(stepIndex) {
