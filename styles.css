@@ -547,6 +547,58 @@ body {
   padding: 1.6rem 1.5rem 1.8rem;
   box-shadow: 0 18px 60px rgba(15, 23, 42, 0.08);
   border: 1px solid rgba(148, 163, 184, 0.35);
+  transition: all 0.3s ease;
+}
+
+/* Sticky Quiz Modal - Locks user in once they engage */
+.quiz-sticky-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 998;
+  backdrop-filter: blur(4px);
+  animation: fadeIn 0.3s ease;
+}
+
+.quiz-card.quiz-sticky-active {
+  position: fixed !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  z-index: 999 !important;
+  max-width: 600px !important;
+  width: 90% !important;
+  max-height: 90vh !important;
+  overflow-y: auto !important;
+  box-shadow: 0 25px 80px rgba(0, 0, 0, 0.3) !important;
+  animation: zoomIn 0.3s ease !important;
+}
+
+body.quiz-modal-open {
+  overflow: hidden !important;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes zoomIn {
+  from {
+    transform: translate(-50%, -50%) scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
 }
 
 .quiz-card h2 {

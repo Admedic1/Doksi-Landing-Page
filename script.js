@@ -136,7 +136,31 @@ console.log("script loaded - v3.0");
         this.classList.add('quiz-option-primary');
 
         userData.homeowner = answer;
-        setTimeout(() => showStep(1), 300);
+        
+        // Make quiz sticky/modal when user engages
+        setTimeout(() => {
+            makeQuizSticky();
+            showStep(1);
+        }, 300);
+    }
+
+    function makeQuizSticky() {
+        const quizCard = document.getElementById('quizCard');
+        const body = document.body;
+        
+        // Create overlay
+        const overlay = document.createElement('div');
+        overlay.id = 'quiz-overlay';
+        overlay.className = 'quiz-sticky-overlay';
+        
+        // Add sticky classes
+        quizCard.classList.add('quiz-sticky-active');
+        body.classList.add('quiz-modal-open');
+        
+        // Insert overlay before quiz card
+        quizCard.parentNode.insertBefore(overlay, quizCard);
+        
+        console.log('✅ Quiz is now sticky - user locked in!');
     }
 
     let isSubmitting = false; // Prevent double submissions
@@ -323,6 +347,10 @@ console.log("script loaded - v3.0");
         // Log when thank-you page is shown
         if (stepIndex === 5) {
             console.log('📄 Thank you page (Step 5) now visible to user');
+            
+            // Remove sticky mode on thank you page
+            removeQuizSticky();
+            
             if (typeof fbq === 'function') {
                 fbq('track', 'Lead', {value: 0.00, currency: 'USD'});
                 console.log("🔥 REAL Facebook Lead event fired on thank-you step");
@@ -330,6 +358,24 @@ console.log("script loaded - v3.0");
         }
 
         currentStep = stepIndex;
+    }
+
+    function removeQuizSticky() {
+        const quizCard = document.getElementById('quizCard');
+        const overlay = document.getElementById('quiz-overlay');
+        const body = document.body;
+        
+        if (quizCard) {
+            quizCard.classList.remove('quiz-sticky-active');
+        }
+        
+        if (overlay) {
+            overlay.remove();
+        }
+        
+        body.classList.remove('quiz-modal-open');
+        
+        console.log('✅ Quiz sticky mode removed - user can scroll freely');
     }
 
     function initCTAs() {
