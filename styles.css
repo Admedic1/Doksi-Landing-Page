@@ -542,24 +542,49 @@ body {
 /* Quiz card */
 
 .quiz-card {
-  background: linear-gradient(135deg, #6c5ce7 0%, #5b4dcc 100%);
+  background: linear-gradient(135deg, #6c5ce7 0%, #5b4dcc 100%) !important;
   border-radius: 1rem;
-  padding: 1.6rem 1.5rem 1.8rem;
-  box-shadow: 0 20px 80px rgba(108, 92, 231, 0.4);
-  border: none;
+  padding: 2rem 1.75rem 2rem !important;
+  box-shadow: 0 25px 100px rgba(108, 92, 231, 0.5) !important;
+  border: none !important;
   transition: all 0.3s ease;
 }
 
-.quiz-card h2,
-.quiz-card p,
-.quiz-question-text,
-.quiz-sub,
-.quiz-time {
+.quiz-card h2 {
   color: white !important;
+  font-size: 1.6rem !important;
+  font-weight: 800 !important;
+  margin-bottom: 1rem !important;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.quiz-card p {
+  color: white !important;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+}
+
+.quiz-question-text {
+  color: white !important;
+  font-weight: 600 !important;
+  font-size: 1.1rem !important;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+}
+
+.quiz-sub {
+  color: rgba(255, 255, 255, 0.95) !important;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+}
+
+.quiz-time {
+  color: rgba(255, 255, 255, 0.9) !important;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
 }
 
 .hero-urgency {
   color: #fef08a !important;
+  font-weight: 800 !important;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  font-size: 1.05rem !important;
 }
 
 /* Sticky Quiz Modal - Locks user in once they engage */
@@ -585,7 +610,8 @@ body {
   width: 90% !important;
   max-height: 90vh !important;
   overflow-y: auto !important;
-  box-shadow: 0 25px 80px rgba(0, 0, 0, 0.3) !important;
+  background: linear-gradient(135deg, #6c5ce7 0%, #5b4dcc 100%) !important;
+  box-shadow: 0 30px 100px rgba(108, 92, 231, 0.6) !important;
   animation: zoomIn 0.3s ease !important;
 }
 
@@ -659,25 +685,32 @@ body.quiz-modal-open {
 
 .quiz-option {
   flex: 1;
-  border-radius: 0.65rem;
-  padding: 0.6rem 0.75rem;
-  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  padding: 1rem 1.25rem;
+  border: 3px solid rgba(255, 255, 255, 0.3);
   background: white;
-  font-size: 0.9rem;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--purple) !important;
   cursor: pointer;
   transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .quiz-option:hover {
-  border-color: var(--purple);
-  background: var(--purple-soft);
+  border-color: white;
+  background: white;
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  color: var(--purple-dark) !important;
 }
 
 .quiz-option-primary {
-  border-color: rgba(129, 140, 248, 0.6);
-  background: rgba(129, 140, 248, 0.06);
-  color: var(--purple-dark);
-  font-weight: 600;
+  border-color: white;
+  background: white;
+  color: var(--purple-dark) !important;
+  font-weight: 700;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
 }
 
 .quiz-option[data-answer="yes"]:hover {
@@ -733,19 +766,25 @@ body.quiz-modal-open {
   padding: 0.875rem 1rem;
   border: 2px solid rgba(255, 255, 255, 0.3);
   border-radius: 0.65rem;
-  font-size: 1rem;
+  font-size: 1.05rem;
   margin-bottom: 1rem;
   transition: all 0.2s ease;
   font-family: inherit;
   background: white;
-  color: var(--text);
+  color: #111827 !important;
+  font-weight: 500;
+}
+
+.quiz-input::placeholder {
+  color: #9ca3af;
 }
 
 .quiz-input:focus {
   outline: none;
   border-color: white;
-  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3);
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.4);
   background: white;
+  transform: scale(1.02);
 }
 
 .quiz-btn-next {
