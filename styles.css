@@ -682,10 +682,9 @@ body.quiz-modal-open {
 }
 
 .quiz-question {
-  border-radius: 0.75rem;
-  background: #f9fafb;
-  padding: 0.9rem;
-  margin-bottom: 1rem;
+  background: transparent;
+  padding: 0;
+  margin: 0;
 }
 
 .quiz-question-text {
