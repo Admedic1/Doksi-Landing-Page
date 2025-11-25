@@ -214,6 +214,31 @@ body {
   color: var(--text);
 }
 
+.big-arrow-container {
+  display: flex;
+  justify-content: center;
+  margin: 1.5rem 0;
+  animation: bounce 2s infinite;
+}
+
+.big-arrow {
+  width: 48px;
+  height: 96px;
+  filter: drop-shadow(0 4px 8px rgba(108, 92, 231, 0.3));
+}
+
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-10px);
+  }
+  60% {
+    transform: translateY(-5px);
+  }
+}
+
 .hero-subheadline {
   margin: 0 0 2rem;
   font-size: 1.35rem;
