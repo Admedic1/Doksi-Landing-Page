@@ -215,10 +215,12 @@ body {
 }
 
 .hero-subheadline {
-  margin: 0 0 1rem;
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: var(--text-soft);
+  margin: 0 0 2rem;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--purple);
+  text-align: center;
+  line-height: 1.4;
 }
 
 .hero-urgency {
