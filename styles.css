@@ -732,11 +732,10 @@ body.quiz-modal-open {
 }
 
 .quiz-option[data-answer="yes"]:hover {
-  background: linear-gradient(135deg, var(--purple), var(--purple-dark));
-  color: white;
-  border-color: var(--purple);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(108, 92, 231, 0.3);
+  background: #22c55e;
+  color: white !important;
+  transform: scale(1.03);
+  box-shadow: 0 12px 32px rgba(34, 197, 94, 0.4);
 }
 
 .quiz-footer {
