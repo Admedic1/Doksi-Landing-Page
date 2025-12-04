@@ -702,16 +702,16 @@ body.quiz-modal-open {
 .quiz-option {
   flex: 1;
   border-radius: 100px;
-  padding: 20px 32px;
+  padding: 14px 24px;
   border: none;
   background: #ffffff;
-  font-size: 1.1rem;
+  font-size: 1rem;
   font-weight: 700;
   color: #5C45F7 !important;
   cursor: pointer;
   transition: all 0.15s ease-out;
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
-  min-height: 60px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  min-height: 48px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1686,9 +1686,10 @@ body.quiz-modal-open {
 
   .quiz-option {
     width: 100%;
-    padding: 18px 28px;
-    font-size: 1.05rem;
+    padding: 12px 20px;
+    font-size: 0.95rem;
     border-radius: 100px;
+    min-height: 44px;
   }
   
   .quiz-btn-next {
