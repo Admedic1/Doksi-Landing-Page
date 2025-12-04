@@ -685,7 +685,7 @@ body.quiz-modal-open {
 .quiz-question {
   background: transparent;
   padding: 0;
-  margin: 0;
+  margin: 0 0 1.5rem 0;
 }
 
 .quiz-question-text {
