@@ -519,6 +519,18 @@
         </div>
     </section>
 
+    <!-- Social Proof Popup -->
+    <div class="social-proof-popup" id="socialProofPopup">
+        <div class="social-proof-content">
+            <div class="social-proof-icon">🏠</div>
+            <div class="social-proof-text">
+                <p class="social-proof-name" id="proofName">Eric from Binghamton, NY</p>
+                <p class="social-proof-action">Just got his garage coated</p>
+                <p class="social-proof-time" id="proofTime">2 days ago</p>
+            </div>
+        </div>
+    </div>
+
     <!-- Exit Intent Popup -->
     <div class="exit-popup" id="exitPopup">
         <div class="exit-popup-content">
@@ -562,6 +574,46 @@
         });
 
         // No close button - user MUST engage with the CTA
+
+        // Social Proof Popup - cycles through different customers
+        const socialProofPopup = document.getElementById('socialProofPopup');
+        const proofName = document.getElementById('proofName');
+        const proofTime = document.getElementById('proofTime');
+        
+        const socialProofs = [
+          { name: 'Eric from Binghamton, NY', time: '2 days ago' },
+          { name: 'Sarah from Endicott, NY', time: '3 days ago' },
+          { name: 'Mike from Vestal, NY', time: '5 days ago' },
+          { name: 'Jennifer from Johnson City, NY', time: '1 week ago' },
+          { name: 'David from Endwell, NY', time: '1 week ago' },
+          { name: 'Lisa from Owego, NY', time: '2 weeks ago' },
+          { name: 'Tom from Binghamton, NY', time: '2 weeks ago' },
+          { name: 'Amanda from Vestal, NY', time: '3 weeks ago' }
+        ];
+        
+        let currentProofIndex = 0;
+        
+        function showSocialProof() {
+          const proof = socialProofs[currentProofIndex];
+          proofName.textContent = proof.name;
+          proofTime.textContent = proof.time;
+          
+          socialProofPopup.classList.add('show');
+          
+          // Hide after 4 seconds
+          setTimeout(() => {
+            socialProofPopup.classList.remove('show');
+          }, 4000);
+          
+          // Move to next proof
+          currentProofIndex = (currentProofIndex + 1) % socialProofs.length;
+        }
+        
+        // Show first popup after 3 seconds
+        setTimeout(showSocialProof, 3000);
+        
+        // Then show every 8 seconds
+        setInterval(showSocialProof, 8000);
       });
     </script>
     <script src="script.js?v=3"></script>
