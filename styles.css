@@ -916,7 +916,7 @@ body.quiz-modal-open {
   margin: 0 0 1rem;
   font-size: 2.5rem;
   font-weight: 900;
-  color: #6c5ce7;
+  color: #6c5ce7 !important;
   text-align: center;
   letter-spacing: 0.05em;
 }
@@ -925,15 +925,21 @@ body.quiz-modal-open {
   margin: 0 0 0.75rem;
   font-size: 1.75rem;
   font-weight: 800;
-  color: #6c5ce7;
+  color: #6c5ce7 !important;
   line-height: 1.3;
 }
 
 .call-offer-text {
   margin: 0 0 1rem;
-  font-size: 0.95rem;
-  color: var(--text);
+  font-size: 1rem;
+  color: #111827 !important;
   line-height: 1.6;
+  font-weight: 500;
+}
+
+.call-offer-text strong {
+  color: #6c5ce7 !important;
+  font-weight: 700;
 }
 
 .call-number-display {
@@ -995,9 +1001,9 @@ body.quiz-modal-open {
 
 .call-urgency {
   margin: 1rem 0 0;
-  font-size: 0.85rem;
-  color: #b91c1c;
-  font-weight: 600;
+  font-size: 0.9rem;
+  color: #b91c1c !important;
+  font-weight: 700;
   font-style: italic;
 }
 
