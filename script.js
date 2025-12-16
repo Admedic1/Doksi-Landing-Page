@@ -16,7 +16,8 @@ function sendLeadToZapier(userData) {
     name: userData.name.trim(),
     zip: userData.zip.trim(),
     email: userData.email.trim(),
-    phone: userData.phone.trim()
+    phone: userData.phone.trim(),
+    ab_variant: window.abTestVariant || 'unknown'
   };
   
   console.log("✅ Validation passed. Sending lead to Zapier and Google Sheets:", payload);
@@ -69,6 +70,49 @@ function sendLeadToZapier(userData) {
 }
 
 console.log("script loaded - v3.0");
+
+// -------------------------------------------------
+//          A/B TEST LOGIC
+// -------------------------------------------------
+
+(function initABTest() {
+    // Check if user already has an assigned variant
+    let variant = localStorage.getItem('ab_test_variant');
+    
+    // If no variant assigned, randomly assign one
+    if (!variant) {
+        variant = Math.random() < 0.5 ? 'A' : 'B';
+        localStorage.setItem('ab_test_variant', variant);
+        console.log('🧪 A/B Test: New visitor assigned to Variant', variant);
+    } else {
+        console.log('🧪 A/B Test: Returning visitor - Variant', variant);
+    }
+    
+    // Store variant globally for tracking
+    window.abTestVariant = variant;
+    
+    // If Variant B, show the before/after image
+    if (variant === 'B') {
+        document.addEventListener('DOMContentLoaded', function() {
+            const abTestImage = document.getElementById('abTestImage');
+            if (abTestImage) {
+                abTestImage.style.display = 'block';
+                console.log('🧪 A/B Test: Showing before/after image (Variant B)');
+            }
+        });
+    }
+    
+    // Send variant to Google Analytics
+    if (typeof gtag === 'function') {
+        gtag('event', 'ab_test_variant', {
+            'event_category': 'A/B Test',
+            'event_label': 'Homepage Image Test',
+            'value': variant === 'A' ? 0 : 1,
+            'variant': variant
+        });
+        console.log('🧪 A/B Test: Sent variant to Google Analytics');
+    }
+})();
 
 // -------------------------------------------------
 //          QUIZ LOGIC BELOW
