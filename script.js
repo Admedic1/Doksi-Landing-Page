@@ -1,85 +1,178 @@
-function sendLeadToZapier(userData) {
-  // VALIDATION: Ensure all fields are filled before sending
-  if (!userData.name || !userData.zip || !userData.email || !userData.phone) {
-    console.error("❌ BLOCKED: Cannot send incomplete lead data", userData);
-    alert("Please fill out all fields before submitting.");
-    return false;
-  }
-  
-  // Additional validation: Check for empty/whitespace-only values
-  if (!userData.name.trim() || !userData.zip.trim() || !userData.email.trim() || !userData.phone.trim()) {
-    console.error("❌ BLOCKED: Cannot send blank lead data", userData);
-    return false;
-  }
-  
-  const payload = {
-    name: userData.name.trim(),
-    zip: userData.zip.trim(),
-    email: userData.email.trim(),
-    phone: userData.phone.trim(),
-    ab_variant: window.abTestVariant || 'unknown'
-  };
-  
-  console.log("✅ Validation passed. Sending lead to Zapier and Google Sheets:", payload);
-  console.log("Payload JSON string:", JSON.stringify(payload));
-  
-  let zapierSuccess = false;
-  let sheetsSuccess = false;
-  
-  // Send to Zapier (primary)
-  fetch("https://hooks.zapier.com/hooks/catch/23450484/u8v689f/", {
-    method: "POST",
-    body: JSON.stringify(payload)
-  })
-  .then(response => {
-    zapierSuccess = response.ok;
-    console.log(zapierSuccess ? "✅ Zapier response status:" : "⚠️ Zapier response status:", response.status);
-    return response.text();
-  })
-  .then(data => {
-    console.log("Zapier response data:", data);
-  })
-  .catch(error => {
-    console.error("❌ Error sending lead to Zapier:", error);
-  });
-  
-  // Send to Google Sheets (backup)
-  const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbwWkTzfGurKHnNc5Xd1n0oA-la1TYVL12ZXJkps9PFT_bC6nsrGuSD_PGcXQD3u9DQ7/exec";
-  
-  if (GOOGLE_SHEET_URL && !GOOGLE_SHEET_URL.includes("PASTE_YOUR")) {
-    fetch(GOOGLE_SHEET_URL, {
-      method: "POST",
-      body: JSON.stringify(payload)
-    })
-    .then(response => {
-      sheetsSuccess = response.ok;
-      console.log(sheetsSuccess ? "✅ Google Sheets backup status:" : "⚠️ Google Sheets backup status:", response.status);
-      return response.json();
-    })
-    .then(data => {
-      console.log("Google Sheets backup response:", data);
-    })
-    .catch(error => {
-      console.error("❌ Error sending to Google Sheets backup:", error);
-    });
-  } else {
-    console.warn("⚠️ Google Sheets backup URL not configured yet");
-  }
-  
-  return true;
+// =============================================================
+//          LEAD SUBMISSION SYSTEM v4.0
+// =============================================================
+
+const CONFIG = {
+    GOOGLE_SHEETS_WEBHOOK: "https://script.google.com/macros/s/AKfycbwWkTzfGurKHnNc5Xd1n0oA-la1TYVL12ZXJkps9PFT_bC6nsrGuSD_PGcXQD3u9DQ7/exec",
+    ZAPIER_WEBHOOK: "https://hooks.zapier.com/hooks/catch/23450484/u8v689f/",
+    DEBUG: true
+};
+
+/**
+ * Formats phone number to E.164 format (+1XXXXXXXXXX)
+ */
+function formatPhoneE164(phone) {
+    const digits = phone.replace(/\D/g, '');
+    if (digits.length === 10) {
+        return '+1' + digits;
+    } else if (digits.length === 11 && digits.startsWith('1')) {
+        return '+' + digits;
+    }
+    return '+1' + digits; // Fallback
 }
 
-console.log("script loaded - v3.0");
+/**
+ * Splits name into first and last name
+ */
+function splitName(fullName) {
+    const parts = fullName.trim().split(/\s+/);
+    return {
+        first_name: parts[0] || '',
+        last_name: parts.slice(1).join(' ') || ''
+    };
+}
+
+/**
+ * Main lead submission function - sends via POST to webhook
+ * @param {Object} userData - User data from quiz
+ * @returns {Promise<boolean>} - Success status
+ */
+async function submitLead(userData) {
+    // VALIDATION: Ensure all required fields
+    const requiredFields = ['name', 'zip', 'email', 'phone'];
+    for (const field of requiredFields) {
+        if (!userData[field] || !userData[field].trim()) {
+            console.error(`❌ BLOCKED: Missing required field: ${field}`, userData);
+            return { success: false, error: `Missing required field: ${field}` };
+        }
+    }
+
+    // Parse name into first/last
+    const { first_name, last_name } = splitName(userData.name);
+
+    // Build the payload
+    const payload = {
+        first_name: first_name,
+        last_name: last_name,
+        phone: formatPhoneE164(userData.phone),
+        email: userData.email.trim().toLowerCase(),
+        zip: userData.zip.trim(),
+        quiz_answers: JSON.stringify({
+            homeowner: userData.homeowner || 'yes',
+            ab_variant: window.abTestVariant || 'unknown'
+        }),
+        page_url: window.location.href,
+        timestamp: new Date().toISOString()
+    };
+
+    if (CONFIG.DEBUG) {
+        console.log('📤 SUBMITTING LEAD VIA POST');
+        console.log('Payload:', JSON.stringify(payload, null, 2));
+    }
+
+    // Track submission results
+    let googleSheetsResult = { success: false, error: null };
+    let zapierResult = { success: false, error: null };
+
+    // ========== SEND TO GOOGLE SHEETS (PRIMARY) ==========
+    try {
+        console.log('📊 Sending to Google Sheets webhook...');
+        
+        const response = await fetch(CONFIG.GOOGLE_SHEETS_WEBHOOK, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'text/plain', // Required for Google Apps Script
+            },
+            body: JSON.stringify(payload)
+        });
+
+        console.log(`📊 Google Sheets response status: ${response.status}`);
+
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        console.log('📊 Google Sheets response:', data);
+
+        if (data.success) {
+            googleSheetsResult.success = true;
+            console.log('✅ GOOGLE SHEETS: Lead saved successfully');
+        } else {
+            throw new Error(data.error || 'Unknown error from webhook');
+        }
+    } catch (error) {
+        googleSheetsResult.error = error.message;
+        console.error('❌ GOOGLE SHEETS ERROR:', error.message);
+    }
+
+    // ========== SEND TO ZAPIER (BACKUP) ==========
+    try {
+        console.log('⚡ Sending to Zapier webhook...');
+        
+        const response = await fetch(CONFIG.ZAPIER_WEBHOOK, {
+            method: 'POST',
+            body: JSON.stringify(payload)
+        });
+
+        console.log(`⚡ Zapier response status: ${response.status}`);
+
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+
+        const data = await response.text();
+        console.log('⚡ Zapier response:', data);
+        
+        zapierResult.success = true;
+        console.log('✅ ZAPIER: Lead sent successfully');
+    } catch (error) {
+        zapierResult.error = error.message;
+        console.error('❌ ZAPIER ERROR:', error.message);
+    }
+
+    // ========== FINAL STATUS ==========
+    const overallSuccess = googleSheetsResult.success || zapierResult.success;
+
+    if (CONFIG.DEBUG) {
+        console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+        console.log('📋 SUBMISSION SUMMARY');
+        console.log(`   Google Sheets: ${googleSheetsResult.success ? '✅ SUCCESS' : '❌ FAILED'}`);
+        if (googleSheetsResult.error) console.log(`      Error: ${googleSheetsResult.error}`);
+        console.log(`   Zapier: ${zapierResult.success ? '✅ SUCCESS' : '❌ FAILED'}`);
+        if (zapierResult.error) console.log(`      Error: ${zapierResult.error}`);
+        console.log(`   Overall: ${overallSuccess ? '✅ AT LEAST ONE SUCCEEDED' : '❌ ALL FAILED'}`);
+        console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    }
+
+    // FAIL LOUDLY if both fail
+    if (!overallSuccess) {
+        console.error('🚨 CRITICAL: BOTH WEBHOOKS FAILED - LEAD NOT SAVED!');
+        return { 
+            success: false, 
+            error: 'Failed to save lead. Please try again or call us directly.',
+            details: { googleSheetsResult, zapierResult }
+        };
+    }
+
+    return { success: true, details: { googleSheetsResult, zapierResult } };
+}
+
+// Legacy function for backwards compatibility
+function sendLeadToZapier(userData) {
+    submitLead(userData);
+    return true;
+}
+
+console.log("🚀 Script loaded - v4.0 (Enhanced Lead Submission)");
 
 // -------------------------------------------------
 //          A/B TEST LOGIC
 // -------------------------------------------------
 
 (function initABTest() {
-    // Check if user already has an assigned variant
     let variant = localStorage.getItem('ab_test_variant');
     
-    // If no variant assigned, randomly assign one
     if (!variant) {
         variant = Math.random() < 0.5 ? 'A' : 'B';
         localStorage.setItem('ab_test_variant', variant);
@@ -88,10 +181,8 @@ console.log("script loaded - v3.0");
         console.log('🧪 A/B Test: Returning visitor - Variant', variant);
     }
     
-    // Store variant globally for tracking
     window.abTestVariant = variant;
     
-    // If Variant B, show the before/after image
     if (variant === 'B') {
         document.addEventListener('DOMContentLoaded', function() {
             const abTestImage = document.getElementById('abTestImage');
@@ -102,7 +193,6 @@ console.log("script loaded - v3.0");
         });
     }
     
-    // Send variant to Google Analytics
     if (typeof gtag === 'function') {
         gtag('event', 'ab_test_variant', {
             'event_category': 'A/B Test',
@@ -115,7 +205,7 @@ console.log("script loaded - v3.0");
 })();
 
 // -------------------------------------------------
-//          QUIZ LOGIC BELOW
+//          QUIZ LOGIC
 // -------------------------------------------------
 
 (function() {
@@ -181,7 +271,6 @@ console.log("script loaded - v3.0");
 
         userData.homeowner = answer;
         
-        // Make quiz sticky/modal when user engages
         setTimeout(() => {
             makeQuizSticky();
             showStep(1);
@@ -192,25 +281,21 @@ console.log("script loaded - v3.0");
         const quizCard = document.getElementById('quizCard');
         const body = document.body;
         
-        // Create overlay
         const overlay = document.createElement('div');
         overlay.id = 'quiz-overlay';
         overlay.className = 'quiz-sticky-overlay';
         
-        // Add sticky classes
         quizCard.classList.add('quiz-sticky-active');
         body.classList.add('quiz-modal-open');
         
-        // Insert overlay before quiz card
         quizCard.parentNode.insertBefore(overlay, quizCard);
         
         console.log('✅ Quiz is now sticky - user locked in!');
     }
 
-    let isSubmitting = false; // Prevent double submissions
+    let isSubmitting = false;
 
-    function handleNextStep(stepIndex) {
-        // Prevent double-clicks during submission
+    async function handleNextStep(stepIndex) {
         if (isSubmitting && stepIndex === 4) {
             console.log("⚠️ Submission already in progress...");
             return;
@@ -221,7 +306,6 @@ console.log("script loaded - v3.0");
 
         const value = input.value.trim();
         
-        // Stronger validation: Check for empty values
         if (!value || value.length === 0) {
             input.focus();
             input.style.borderColor = '#ef4444';
@@ -239,7 +323,6 @@ console.log("script loaded - v3.0");
             return;
         }
 
-        // Name validation for step 1 (at least 2 characters)
         if (stepIndex === 1 && value.length < 2) {
             input.focus();
             input.style.borderColor = '#ef4444';
@@ -251,7 +334,6 @@ console.log("script loaded - v3.0");
             return;
         }
 
-        // Zip code validation for step 2
         if (stepIndex === 2) {
             const zipRegex = /^\d{5}$/;
             if (!zipRegex.test(value)) {
@@ -266,7 +348,6 @@ console.log("script loaded - v3.0");
             }
         }
 
-        // Email validation for step 3
         if (stepIndex === 3) {
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!emailRegex.test(value)) {
@@ -281,7 +362,6 @@ console.log("script loaded - v3.0");
             }
         }
 
-        // Phone validation for step 4 (basic check)
         if (stepIndex === 4) {
             const phoneRegex = /[\d\(\)\-\s]{10,}/;
             if (!phoneRegex.test(value)) {
@@ -316,23 +396,22 @@ console.log("script loaded - v3.0");
                 btn.textContent = '⏳ Submitting...';
             }
 
-            // SEND TO ZAPIER & GOOGLE SHEETS - function is in global scope
-            const sendSuccess = sendLeadToZapier(userData);
+            // SUBMIT LEAD
+            const result = await submitLead(userData);
             
-            if (!sendSuccess) {
-                // Reset if validation failed
+            if (!result.success) {
                 isSubmitting = false;
                 if (btn) {
                     btn.disabled = false;
                     btn.style.opacity = '1';
                     btn.textContent = originalText;
                 }
-                console.error("❌ Failed to send lead - validation error");
-                alert("There was an error submitting your information. Please check all fields and try again.");
+                console.error("❌ Failed to submit lead:", result.error);
+                alert(result.error || "There was an error submitting your information. Please try again or call us directly.");
                 return;
             }
 
-            // Success - proceed to thank you page
+            // Success - reset button
             setTimeout(() => {
                 isSubmitting = false;
                 if (btn) {
@@ -340,7 +419,7 @@ console.log("script loaded - v3.0");
                     btn.style.opacity = '1';
                     btn.textContent = originalText;
                 }
-            }, 2000);
+            }, 1000);
         }
 
         if (stepIndex < 4) {
@@ -382,13 +461,11 @@ console.log("script loaded - v3.0");
             const progressBar = currentStepEl.querySelector('.progress-bar');
             if (progressBar) progressBar.style.width = quizData.progress[stepIndex] + '%';
 
-            // Focus first input if exists
             const input = currentStepEl.querySelector('.quiz-input');
             if (input) {
                 setTimeout(() => input.focus(), 100);
             }
 
-            // Scroll quiz into view on mobile
             if (window.innerWidth < 768) {
                 const quizCard = document.getElementById('quizCard');
                 if (quizCard) {
@@ -397,17 +474,14 @@ console.log("script loaded - v3.0");
             }
         }
 
-        // Hide footer on success step
         const footer = document.getElementById('quizFooter');
         if (footer) {
             footer.style.display = stepIndex === 5 ? 'none' : 'block';
         }
 
-        // Log when thank-you page is shown
         if (stepIndex === 5) {
             console.log('📄 Thank you page (Step 5) now visible to user');
             
-            // Remove sticky mode on thank you page
             removeQuizSticky();
             
             if (typeof fbq === 'function') {
@@ -446,7 +520,6 @@ console.log("script loaded - v3.0");
                     if (quizCard) {
                         e.preventDefault();
                         quizCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                        // If on step 0, trigger first question
                         if (currentStep === 0) {
                             const firstOption = document.querySelector('.quiz-option[data-answer="yes"]');
                             if (firstOption) {
