@@ -167,40 +167,53 @@ function sendLeadToZapier(userData) {
 console.log("🚀 Script loaded - v4.0 (Enhanced Lead Submission)");
 
 // -------------------------------------------------
-//          A/B TEST LOGIC
+//          A/B TEST LOGIC - HEADLINE TEST (Test #2)
 // -------------------------------------------------
 
 (function initABTest() {
+    // Clear old test data to start fresh headline test
+    const currentTest = localStorage.getItem('ab_test_name');
+    if (currentTest !== 'headline_test_2') {
+        localStorage.removeItem('ab_test_variant');
+        localStorage.setItem('ab_test_name', 'headline_test_2');
+    }
+    
     let variant = localStorage.getItem('ab_test_variant');
     
     if (!variant) {
         variant = Math.random() < 0.5 ? 'A' : 'B';
         localStorage.setItem('ab_test_variant', variant);
-        console.log('🧪 A/B Test: New visitor assigned to Variant', variant);
+        console.log('🧪 Headline Test: New visitor assigned to Variant', variant);
     } else {
-        console.log('🧪 A/B Test: Returning visitor - Variant', variant);
+        console.log('🧪 Headline Test: Returning visitor - Variant', variant);
     }
     
     window.abTestVariant = variant;
     
-    if (variant === 'B') {
-        document.addEventListener('DOMContentLoaded', function() {
-            const abTestImage = document.getElementById('abTestImage');
-            if (abTestImage) {
-                abTestImage.style.display = 'block';
-                console.log('🧪 A/B Test: Showing before/after image (Variant B)');
-            }
-        });
-    }
+    // Headlines for the test
+    const headlines = {
+        A: 'Fix Your Cracked, Stained Concrete <span class="text-gradient">in 1 Day</span>',
+        B: 'What Binghamton\'s Doing to Increase Their Home Value: <span class="text-gradient">Garage Floor Coatings</span>'
+    };
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        const heroHeadline = document.getElementById('heroHeadline');
+        if (heroHeadline && variant === 'B') {
+            heroHeadline.innerHTML = headlines.B;
+            console.log('🧪 Headline Test: Showing Variant B headline');
+        } else {
+            console.log('🧪 Headline Test: Showing Variant A headline (control)');
+        }
+    });
     
     if (typeof gtag === 'function') {
         gtag('event', 'ab_test_variant', {
             'event_category': 'A/B Test',
-            'event_label': 'Homepage Image Test',
+            'event_label': 'Headline Test 2',
             'value': variant === 'A' ? 0 : 1,
             'variant': variant
         });
-        console.log('🧪 A/B Test: Sent variant to Google Analytics');
+        console.log('🧪 Headline Test: Sent variant to Google Analytics');
     }
 })();
 
