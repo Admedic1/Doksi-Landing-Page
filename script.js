@@ -171,6 +171,41 @@ console.log("🚀 Script loaded - v4.0 (Enhanced Lead Submission)");
 // -------------------------------------------------
 
 (function initABTest() {
+    // Headlines for the test
+    const headlines = {
+        A: 'Fix Your Cracked, Stained Concrete <span class="text-gradient">in 1 Day</span>',
+        B: 'What Binghamton\'s Doing to Increase Their Home Value: <span class="text-gradient">Garage Floor Coatings</span>'
+    };
+    
+    function applyHeadline(v) {
+        const apply = function() {
+            const heroHeadline = document.getElementById('heroHeadline');
+            if (heroHeadline && v === 'B') {
+                heroHeadline.innerHTML = headlines.B;
+                console.log('🧪 Headline Test: Showing Variant B headline');
+            } else if (heroHeadline) {
+                console.log('🧪 Headline Test: Showing Variant A headline (control)');
+            }
+        };
+        
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', apply);
+        } else {
+            apply();
+        }
+    }
+    
+    // Check for URL parameter override (for previewing variants)
+    const urlParams = new URLSearchParams(window.location.search);
+    const forceVariant = urlParams.get('variant');
+    
+    if (forceVariant === 'A' || forceVariant === 'B') {
+        window.abTestVariant = forceVariant;
+        console.log('🧪 Headline Test: FORCED to Variant', forceVariant, '(via URL)');
+        applyHeadline(forceVariant);
+        return;
+    }
+    
     // Clear old test data to start fresh headline test
     const currentTest = localStorage.getItem('ab_test_name');
     if (currentTest !== 'headline_test_2') {
@@ -189,22 +224,7 @@ console.log("🚀 Script loaded - v4.0 (Enhanced Lead Submission)");
     }
     
     window.abTestVariant = variant;
-    
-    // Headlines for the test
-    const headlines = {
-        A: 'Fix Your Cracked, Stained Concrete <span class="text-gradient">in 1 Day</span>',
-        B: 'What Binghamton\'s Doing to Increase Their Home Value: <span class="text-gradient">Garage Floor Coatings</span>'
-    };
-    
-    document.addEventListener('DOMContentLoaded', function() {
-        const heroHeadline = document.getElementById('heroHeadline');
-        if (heroHeadline && variant === 'B') {
-            heroHeadline.innerHTML = headlines.B;
-            console.log('🧪 Headline Test: Showing Variant B headline');
-        } else {
-            console.log('🧪 Headline Test: Showing Variant A headline (control)');
-        }
-    });
+    applyHeadline(variant);
     
     if (typeof gtag === 'function') {
         gtag('event', 'ab_test_variant', {
