@@ -3,7 +3,7 @@
 // =============================================================
 
 const CONFIG = {
-    GOOGLE_SHEETS_WEBHOOK: "https://script.google.com/macros/s/AKfycbzWCQN8AvbRGjtkFy35IAuLhFlpxvUvMgKC79WYhvK0OBmsaehT9aaMAHJ7fwRD87CM/exec",
+    GOOGLE_SHEETS_WEBHOOK: "https://script.google.com/macros/s/AKfycbxdrg96cCthZEp2SbOlLmJQw1OE3tnDb8i8u6xPdnmqbi_0ICPDX02RI0D3HyCCVS1d/exec",
     ZAPIER_WEBHOOK: "https://hooks.zapier.com/hooks/catch/23450484/u8v689f/",
     DEBUG: true
 };
