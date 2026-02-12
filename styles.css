@@ -244,10 +244,11 @@ body {
 
 .hero-headline-main {
   margin: 0 0 0.5rem;
-  font-size: 2rem;
-  line-height: 1.2;
+  font-size: 2.5rem;
+  line-height: 1.15;
   font-weight: 800;
   color: var(--text);
+  letter-spacing: -0.02em;
 }
 
 /* Hero Benefits - Bullet Points */
@@ -502,10 +503,11 @@ body {
 }
 
 .text-gradient {
-  background: linear-gradient(120deg, var(--purple), var(--purple-dark));
+  background: linear-gradient(135deg, #7c3aed, #6c5ce7, #8b5cf6);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+  font-weight: 800;
 }
 
 .hero-sub {
@@ -1722,8 +1724,8 @@ body.quiz-modal-open {
   }
 
   .hero-headline-main {
-    font-size: 1.4rem;
-    line-height: 1.25;
+    font-size: 1.65rem;
+    line-height: 1.2;
   }
 
   .hero-benefits {
