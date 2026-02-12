@@ -214,11 +214,31 @@ body {
   color: var(--text);
 }
 
-/* A/B Test: Before/After Image */
+/* Hero Benefits - Bullet Points */
+.hero-benefits {
+  list-style: none;
+  padding: 0;
+  margin: 0.75rem 0 1.25rem;
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.hero-benefits li {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--purple);
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+/* Before/After Image - Below Quiz */
 .ab-test-image {
-  margin: 0.75rem auto;
-  max-width: 320px;
-  border-radius: 12px;
+  margin: 2rem auto 0;
+  max-width: 400px;
+  border-radius: 16px;
   overflow: hidden;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
   animation: fadeInUp 0.4s ease-out;
@@ -1649,6 +1669,17 @@ body.quiz-modal-open {
   .hero-headline-main {
     font-size: 1.4rem;
     line-height: 1.25;
+  }
+
+  .hero-benefits {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0.5rem 0 1rem;
+  }
+
+  .hero-benefits li {
+    font-size: 0.9rem;
   }
 
   .big-arrow-container {

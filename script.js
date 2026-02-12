@@ -173,8 +173,8 @@ console.log("🚀 Script loaded - v4.0 (Enhanced Lead Submission)");
 (function initABTest() {
     // Headlines for the test
     const headlines = {
-        A: 'Fix Your Cracked, Stained Concrete <span class="text-gradient">in 1 Day</span>',
-        B: 'What Binghamton\'s Doing to Increase Their Home Value: <span class="text-gradient">Garage Floor Coatings</span>'
+        A: 'Binghamton — Set Up Your <span class="text-gradient">Dream Garage Floor</span> Today',
+        B: 'Binghamton — Set Up Your <span class="text-gradient">Dream Garage Floor</span> Today'
     };
     
     function applyHeadline(v) {
