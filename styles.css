@@ -187,32 +187,33 @@ body {
 }
 
 .google-reviews-icon {
-  width: 28px;
-  height: 28px;
+  width: 65px;
+  height: auto;
   object-fit: contain;
 }
 
 .google-reviews-text {
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
-  text-align: right;
+  align-items: flex-start;
+  text-align: left;
 }
 
-.google-reviews-rating {
-  font-size: 0.8rem;
-  font-weight: 600;
+.google-reviews-top {
+  font-size: 0.75rem;
+  font-weight: 500;
   color: var(--text);
 }
 
-.google-reviews-rating::before {
-  content: "";
+.google-reviews-top .stars {
+  color: #fbbc04;
+  font-size: 0.7rem;
 }
 
 .google-reviews-count {
-  font-size: 0.7rem;
-  color: var(--text-soft);
-  font-weight: 500;
+  font-size: 0.8rem;
+  color: #00a0dc;
+  font-weight: 600;
 }
 
 /* Hero */
@@ -1711,16 +1712,20 @@ body.quiz-modal-open {
   }
 
   .google-reviews-icon {
-    width: 22px;
-    height: 22px;
+    width: 50px;
+    height: auto;
   }
 
-  .google-reviews-rating {
-    font-size: 0.7rem;
+  .google-reviews-top {
+    font-size: 0.65rem;
+  }
+
+  .google-reviews-top .stars {
+    font-size: 0.6rem;
   }
 
   .google-reviews-count {
-    font-size: 0.6rem;
+    font-size: 0.7rem;
   }
 
   .hero-headline-main {
