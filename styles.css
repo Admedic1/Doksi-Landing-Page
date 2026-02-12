@@ -259,6 +259,7 @@ body {
   max-width: 800px;
   margin: 0 auto;
   text-align: center;
+  padding-top: 0;
 }
 
 .hero-subtext {
