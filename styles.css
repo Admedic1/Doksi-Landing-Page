@@ -683,6 +683,17 @@ body {
   text-align: center !important;
 }
 
+.quiz-step-label {
+  color: #ffffff !important;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin: 0 0 0.5rem;
+  text-align: center;
+  opacity: 0.9;
+}
+
 .quiz-question-text {
   color: #ffffff !important;
   opacity: 1 !important;
